@@ -1,0 +1,72 @@
+import java.security.MessageDigest;
+import java.util.Arrays;
+
+public class Part2 {
+	private static MessageDigest md; // static value used for Message Hashing
+	public static byte[] hash(byte [] m) { // constructor used to create the hashing for messages in byte format
+		byte[] ret = new byte[32]; // create a byte array that sets the length of bytes to only 3 which will give hash of 24bits 8x3 = 24 
+		byte[] h; // create another byte h to hold values
+		
+		try {
+			md = MessageDigest.getInstance("SHA-256"); // used to get hash in SHA-256 format
+		}
+		catch (java.security.NoSuchAlgorithmException e)
+		{}
+
+		h = md.digest(m); // set the hash value of the message equal to h 
+		// below stores each byte into ret byte array
+		for(int i = 0; i < 32;i++)
+		{
+			ret[i] = h[i];
+		}
+		return ret; // returns the hash value of the message
+	}
+	public static void main(String args[]){
+		
+		 Part2 b = new Part2(); //create object for HashCollision class to be used to hash message
+		 String hexvalue1 = "12B904372337CD7739BE3712D7D648F1E4A936FAD760AAF2C267C3335736ECD8";
+		 char licence[] = new char [7]; // array to hold the 7 variables for licence plates
+		 //Below using a for loop within for loop to loop thorugh each possible value in AAA0000
+		 for (char c0 = 'A';c0 <='Z';c0++){
+			 licence[0] = c0;
+		 	 for(char c1 = 'A';c1 <='Z';c1++){
+		 		licence[1] = c1;
+		 		for(char c2 = 'A';c2<='Z';c2++){
+		 			licence[2] = c2;
+		 			for(char c3 = '0';c3<='9';c3++){
+		 				licence[3] = c3;
+		 				for(char c4 ='0';c4<='9';c4++ ){
+		 					licence[4] = c4;
+		 					for(char c5 ='0';c5<='9';c5++){
+		 						licence[5] = c5;
+		 						for(char c6='0';c6<='9';c6++){
+		 							licence[6] = c6;
+		 							String s = new String(licence);//For each possible value, store the string of the licence
+		 							byte [] msg = s.getBytes();//convert string to bytes
+		 							byte [] hashmsg = b.hash(msg);//hash the msg
+		 							StringBuffer HexConv1 = new StringBuffer();//used to convert the hash to hex format
+	 								for (int k = 0;k<hashmsg.length;k++) {
+	 							        HexConv1.append(Integer.toString((hashmsg[k] & 0xFF)+0x100, 16).substring(1).toUpperCase());
+	 							     }
+	 								//convert hex to string
+	 								 String hexvalue = HexConv1.toString();
+	 								 //using the if statement to check if the 2 strings match it will output the hexvalue and the corresponding
+	 								 //License plate number
+		 							 if (hexvalue.equals(hexvalue1))
+		 							 {
+		 								 System.out.println(hexvalue1);
+		 								 System.out.println(s);
+		 								 System.out.println(Arrays.toString(hashmsg));
+		 								 System.out.println(hexvalue);
+		 								 System.out.println("There is a collision");
+		 								 break;
+		 							 }
+		 						}
+		 					}
+		 				}
+		 			}
+		 		}
+		 	 }
+		 } 
+	}
+}

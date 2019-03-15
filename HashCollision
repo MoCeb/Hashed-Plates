@@ -1,0 +1,58 @@
+import java.security.MessageDigest;
+import java.util.*;
+	
+public class HashCollision {
+		private static MessageDigest md; // static value used for Message Hashing
+		public static byte[] hash(byte [] m) { // constructor used to create the hashing for messages in byte format
+			byte[] ret = new byte[3]; // create a byte array that sets the length of bytes to only 3 which will give hash of 24bits 8x3 = 24 
+			byte[] h; // create another byte h to hold values
+			
+			try {
+				md = MessageDigest.getInstance("SHA-256"); // used to get hash in SHA-256 format
+			}
+			catch (java.security.NoSuchAlgorithmException e)
+			{}
+
+			h = md.digest(m); // set the hash value of the message equal to h 
+			// below stores each byte into ret byte array
+			ret[0] = h[0];
+			ret[1] = h[1];
+			ret[2] = h[2];
+			
+			return ret; // returns the hash value of the message
+		}
+		
+		  public static void main(String args[]){
+			 HashCollision b = new HashCollision(); //create object for HashCollision class to be used to hash message
+			 int i = 1000;// variable x to use to find collision
+			 String string1 = Integer.toString(i);//convert the int to string
+			 byte [] msg = string1.getBytes();//get string1 bytes and store into msg
+			 byte [] hashmsg = b.hash(msg);// hash byte msg
+			 System.out.println(Arrays.toString(hashmsg));
+			 StringBuffer HexConv = new StringBuffer();// use to get the hex value
+			 for (int k = 0;k<hashmsg.length;k++) {
+		         HexConv.append(Integer.toString((hashmsg[k] & 0xFF)+0x100, 16).substring(1).toUpperCase());
+		      }
+		      System.out.println("Hex format : " + HexConv.toString());
+			 for( int j = 1001; j<1000000;j++)
+			 {
+				 String string2 = Integer.toString(j);// convert the string to bytes and store into byte array c
+				 byte [] msg1 = string2.getBytes();
+				 byte [] hashmsg1 = b.hash(msg1); // call hash constructor from class on byte msg1 to hash the message and store into byte array hashmsg1
+				 // boolean used to compare the 2 arrays
+				 boolean isCollision = Arrays.equals(hashmsg, hashmsg1);
+				 if (isCollision == true)
+				 {
+					 System.out.println(j);
+					 System.out.println(Arrays.toString(hashmsg1));
+					 System.out.println("There is a collision");
+					 StringBuffer HexConv1 = new StringBuffer();
+					 for (int k = 0;k<hashmsg1.length;k++) {
+				         HexConv1.append(Integer.toString((hashmsg1[k] & 0xFF)+0x100, 16).substring(1).toUpperCase());
+				      }
+				      System.out.println("Hex format : " + HexConv1.toString()); 
+				 continue;
+				 }
+			 }
+			  
+	}}
